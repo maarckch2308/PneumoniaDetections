@@ -52,15 +52,20 @@ def predict():
         return jsonify({'error': 'No image data provided'}), 400
 
     img_data = data['image']
-    preds = model_predict_tflite(img_data)
+    
+    try:
+        preds = model_predict_tflite(img_data)
+        if isinstance(preds, str):
+            return jsonify({'error': preds}), 400
 
-    if isinstance(preds, str):
-        return jsonify({'error': preds}), 400
+        # Interpretar la predicción
+        predicted_class = class_names[1] if preds[0][0] > 0.5 else class_names[0]
 
-    # Interpretar la predicción
-    predicted_class = class_names[1] if preds[0][0] > 0.5 else class_names[0]
+        return jsonify({'prediction': f"La predicción es: {predicted_class}"})
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500  # Manejo de errores
 
-    return jsonify({'prediction': f"La predicción es: {predicted_class}"})
 
 
 @app.route('/')
