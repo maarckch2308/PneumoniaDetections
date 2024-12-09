@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Predicción de Radiografías</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -18,68 +19,6 @@
     </form>
     <div class="result" id="result"></div>
 
-    <script>
-        const fileInput = document.getElementById('file-input');
-        const previewDiv = document.querySelector('.preview');
-        const previewImg = document.getElementById('preview-img');
-        const submitButton = document.getElementById('submit-button');
-        const resultDiv = document.getElementById('result');
-
-        // Mostrar vista previa de la imagen seleccionada
-        fileInput.addEventListener('change', () => {
-            const file = fileInput.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    previewDiv.style.display = 'block';
-                    previewImg.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            } else {
-                previewDiv.style.display = 'none';
-            }
-        });
-
-        // Enviar imagen al servidor en formato JSON usando AJAX
-        submitButton.addEventListener('click', async () => {
-            const file = fileInput.files[0];
-
-            if (!file) {
-                resultDiv.textContent = "Por favor, selecciona una imagen antes de enviar.";
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = async function (e) {
-                const imageBase64 = e.target.result; // Imagen codificada en base64
-
-                const data = {
-                    image: imageBase64
-                };
-
-                try {
-                    const response = await fetch("https://pneumoniadetections.onrender.com/predict", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify(data)  // Enviar datos en formato JSON
-                    });
-
-                    if (response.ok) {
-                        const result = await response.json();
-                        resultDiv.textContent = result.prediction; // Mostrar la predicción en el div
-                    } else {
-                        resultDiv.textContent = "Error en la predicción. Intenta nuevamente.";
-                    }
-                } catch (error) {
-                    console.error('Error:', error);
-                    resultDiv.textContent = "Ocurrió un error. Por favor, inténtalo nuevamente.";
-                }
-            };
-
-            reader.readAsDataURL(file);
-        });
-    </script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
