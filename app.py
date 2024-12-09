@@ -20,12 +20,10 @@ class_names = ['NORMAL', 'NEUMONIA']
 app = Flask(__name__)
 
 def model_predict_tflite(img_data):
-    print("Recibiendo imagen base64...")
+    # Convertir la imagen de base64 a un array numpy
     img = cv2.imdecode(np.frombuffer(base64.b64decode(img_data), np.uint8), cv2.IMREAD_COLOR)
     if img is None:
-        print("Error al cargar la imagen.")
         return "Error: No se pudo cargar la imagen. Verifica el formato."
-    print("Imagen cargada correctamente.")
     
     # Redimensionar la imagen
     img = cv2.resize(img, (width_shape, height_shape))
@@ -59,10 +57,11 @@ def predict():
     if isinstance(preds, str):
         return jsonify({'error': preds}), 400
 
-    # Asumir que la salida tiene una dimensión (1, 2) para las dos clases
-    predicted_class = class_names[np.argmax(preds)]
+    # Interpretar la predicción
+    predicted_class = class_names[1] if preds[0][0] > 0.5 else class_names[0]
 
     return jsonify({'prediction': f"La predicción es: {predicted_class}"})
+
 
 @app.route('/')
 def home():
