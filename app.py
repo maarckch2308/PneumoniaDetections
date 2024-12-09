@@ -12,6 +12,7 @@ from werkzeug.utils import secure_filename
 import os
 import numpy as np
 import cv2
+import tensorflow as tf
 
 # Configuración de tamaño de imagen
 width_shape = 128
