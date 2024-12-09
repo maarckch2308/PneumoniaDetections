@@ -1,25 +1,15 @@
 from __future__ import division, print_function
 
-# Keras
-from keras.models import load_model
-from keras.preprocessing import image
-from keras.applications.imagenet_utils import preprocess_input
-
-# Flask 
+# Flask
 from flask import Flask, request, render_template
 from werkzeug.utils import secure_filename
 from werkzeug.exceptions import BadRequest
 
-
+import os
 import numpy as np
+import tensorflow as tf
 import cv2
 
-import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-
-import tensorflow as tf
-tf.config.set_visible_devices([], 'GPU')  # Asegura que no se usen GPUs
-tf.get_logger().setLevel('ERROR')  # Reduce el nivel de logs de TensorFlow
 # Configuración de tamaño de imagen
 width_shape = 128
 height_shape = 128
@@ -30,21 +20,21 @@ class_names = ['NORMAL', 'NEUMONIA']
 # Definimos una instancia de Flask
 app = Flask(__name__)
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Directorio base del proyecto
-MODEL_PATH = os.path.join(BASE_DIR, 'models', 'modelo_mlp_radiografia.tflite')
+# Path del modelo preentrenado
+MODEL_PATH = './models/modelo_mlp_radiografia.tflite'
 
 # Cargar el modelo TensorFlow Lite
 interpreter = tf.lite.Interpreter(model_path=MODEL_PATH)
 interpreter.allocate_tensors()
 
-
-# Cargamos el modelo preentrenado
-model = load_model(MODEL_PATH)
+# Obtener detalles de entrada y salida
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
 
 print('Modelo cargado exitosamente. Verificar http://127.0.0.1:5000/')
 
-# Realizamos la predicción usando la imagen cargada y el modelo
-def model_predict(img_path, model):
+# Función para realizar la predicción usando TensorFlow Lite
+def model_predict_tflite(img_path):
     try:
         # Cargar la imagen
         img = cv2.imread(img_path)
@@ -56,19 +46,26 @@ def model_predict(img_path, model):
         # Redimensionar la imagen a 128x128
         img = cv2.resize(img, (width_shape, height_shape))
 
-        # Convertir la imagen a formato adecuado para la red (tensor)
-        img = np.asarray(img)
+        # Convertir la imagen a formato adecuado para el modelo
+        img = np.asarray(img, dtype=np.float32)
 
-        # Normalización de la imagen
+        # Normalizar la imagen
         img = img / 255.0  # Dividimos entre 255 para normalizar los píxeles entre 0 y 1
 
-        # Expandir las dimensiones de la imagen (para que se ajuste al modelo)
+        # Expandir las dimensiones para que se ajuste al modelo (1, 128, 128, 3)
         img = np.expand_dims(img, axis=0)
 
-        # Predicción con el modelo
-        preds = model.predict(img)
+        # Establecer la entrada del modelo
+        interpreter.set_tensor(input_details[0]['index'], img)
 
-        return preds
+        # Realizar la inferencia
+        interpreter.invoke()
+
+        # Obtener los resultados
+        output_data = interpreter.get_tensor(output_details[0]['index'])
+
+        return output_data
+
     except Exception as e:
         return str(e)
 
@@ -92,8 +89,8 @@ def upload():
         file_path = os.path.join(basepath, 'uploads', secure_filename(f.filename))
         f.save(file_path)
 
-        # Predicción
-        preds = model_predict(file_path, model)
+        # Predicción usando el modelo tflite
+        preds = model_predict_tflite(file_path)
 
         # Eliminar archivo después de procesar
         os.remove(file_path)
