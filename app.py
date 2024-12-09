@@ -25,6 +25,8 @@ app = Flask(__name__)
 
 # Path del modelo preentrenado
 MODEL_PATH = './models/modelo_mlp_radiografia.tflite'
+interpreter = tf.lite.Interpreter(model_path=MODEL_PATH)
+interpreter.allocate_tensors()
 
 # Cargamos el modelo preentrenado
 model = load_model(MODEL_PATH)
