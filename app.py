@@ -8,6 +8,7 @@ from keras.applications.imagenet_utils import preprocess_input
 # Flask 
 from flask import Flask, request, render_template
 from werkzeug.utils import secure_filename
+from werkzeug.exceptions import BadRequest
 
 import os
 import numpy as np
@@ -75,6 +76,10 @@ def upload():
         # Obtiene el archivo del request
         f = request.files['file']
 
+        # Validación del archivo subido
+        if not f or not f.filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+            raise BadRequest("Por favor sube un archivo de imagen válido (png, jpg, jpeg).")
+
         # Graba el archivo en ./uploads
         basepath = os.path.dirname(__file__)
         file_path = os.path.join(basepath, 'uploads', secure_filename(f.filename))
@@ -83,12 +88,15 @@ def upload():
         # Predicción
         preds = model_predict(file_path, model)
 
+        # Eliminar archivo después de procesar
+        os.remove(file_path)
+
         # Verificar si hubo un error
         if isinstance(preds, str):
             return preds  # Devuelve el error como respuesta
 
         # Interpretar predicción (para modelo binario)
-        if preds[0] > 0.5:
+        if preds[0][0] > 0.5:
             predicted_class = class_names[1]  # NEUMONIA
         else:
             predicted_class = class_names[0]  # NORMAL
@@ -101,4 +109,4 @@ def upload():
     return None
 
 if __name__ == '__main__':
-    app.run(debug=False, threaded=False)
+    app.run(debug=False)
