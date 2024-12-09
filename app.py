@@ -20,10 +20,12 @@ class_names = ['NORMAL', 'NEUMONIA']
 app = Flask(__name__)
 
 def model_predict_tflite(img_data):
-    # Convertir la imagen de base64 a un array numpy
+    print("Recibiendo imagen base64...")
     img = cv2.imdecode(np.frombuffer(base64.b64decode(img_data), np.uint8), cv2.IMREAD_COLOR)
     if img is None:
+        print("Error al cargar la imagen.")
         return "Error: No se pudo cargar la imagen. Verifica el formato."
+    print("Imagen cargada correctamente.")
     
     # Redimensionar la imagen
     img = cv2.resize(img, (width_shape, height_shape))
