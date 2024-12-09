@@ -41,9 +41,8 @@
             }
         });
 
-        // Enviar imagen al servidor usando AJAX
-        submitButton.addEventListener('click', () => {
-            const formData = new FormData();
+        // Enviar imagen al servidor en formato JSON usando AJAX
+        submitButton.addEventListener('click', async () => {
             const file = fileInput.files[0];
 
             if (!file) {
@@ -51,20 +50,36 @@
                 return;
             }
 
-            formData.append('file', file);
+            const reader = new FileReader();
+            reader.onload = async function (e) {
+                const imageBase64 = e.target.result; // Imagen codificada en base64
 
-            fetch('/predict', {
-                method: 'POST',
-                body: formData,
-            })
-            .then(response => response.text())
-            .then(data => {
-                resultDiv.textContent = data;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                resultDiv.textContent = "Ocurrió un error. Por favor, inténtalo nuevamente.";
-            });
+                const data = {
+                    image: imageBase64
+                };
+
+                try {
+                    const response = await fetch("https://pneumoniadetections.onrender.com", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(data)  // Enviar datos en formato JSON
+                    });
+
+                    if (response.ok) {
+                        const result = await response.text();
+                        resultDiv.textContent = result;
+                    } else {
+                        resultDiv.textContent = "Error en la predicción. Intenta nuevamente.";
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    resultDiv.textContent = "Ocurrió un error. Por favor, inténtalo nuevamente.";
+                }
+            };
+
+            reader.readAsDataURL(file);
         });
     </script>
 </body>
