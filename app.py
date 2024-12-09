@@ -31,8 +31,13 @@ class_names = ['NORMAL', 'NEUMONIA']
 # Definimos una instancia de Flask
 app = Flask(__name__)
 
-# Path del modelo preentrenado
-MODEL_PATH = './models/modelo_mlp_radiografia.h5'
+# Path del modelo TensorFlow Lite
+MODEL_PATH = './models/modelo_mlp_radiografia.tflite'
+
+# Cargar el modelo TensorFlow Lite
+interpreter = tf.lite.Interpreter(model_path=MODEL_PATH)
+interpreter.allocate_tensors()
+
 
 # Cargamos el modelo preentrenado
 model = load_model(MODEL_PATH)
