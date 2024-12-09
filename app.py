@@ -33,6 +33,7 @@ def model_predict_tflite(img_data):
     
     # Redimensionar la imagen
     img = cv2.resize(img, (width_shape, height_shape))
+    print(f"Imagen redimensionada a: {img.shape}")  # Log de la forma de la imagen
 
     # Normalizar la imagen
     img = img / 255.0
@@ -50,6 +51,7 @@ def model_predict_tflite(img_data):
     output_data = interpreter.get_tensor(output_details[0]['index'])
     
     return output_data
+
 
 
 @app.route('/predict', methods=['POST'])
