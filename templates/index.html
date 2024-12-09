@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Predicción de Radiografías</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    </head>
-    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predicción de Radiografías</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
 <body>
     <h1>Predicción de Radiografías</h1>
-    <form id="upload-form" enctype="multipart/form-data">
+    <form id="upload-form">
         <input type="file" id="file-input" name="file" accept="image/*" required>
         <div class="preview">
             <p>Vista previa de la imagen:</p>
@@ -41,8 +40,8 @@
             }
         });
 
-                // Enviar imagen al servidor en formato JSON usando AJAX
-                submitButton.addEventListener('click', async () => {
+        // Enviar imagen al servidor en formato JSON usando AJAX
+        submitButton.addEventListener('click', async () => {
             const file = fileInput.files[0];
 
             if (!file) {
@@ -81,7 +80,6 @@
 
             reader.readAsDataURL(file);
         });
-
     </script>
 </body>
 </html>
