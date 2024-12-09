@@ -11,9 +11,11 @@ from werkzeug.utils import secure_filename
 
 import os
 import numpy as np
+import tensorflow as tf
 import cv2
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+tf.get_logger().setLevel('ERROR')
 
 # Configuración de tamaño de imagen
 width_shape = 128
