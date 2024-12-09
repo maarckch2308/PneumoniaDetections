@@ -3,6 +3,7 @@ import base64
 import cv2
 import numpy as np
 import tensorflow as tf
+from io import BytesIO
 
 # Cargar el modelo de TensorFlow Lite
 MODEL_PATH = './models/modelo_mlp_radiografia.tflite'
@@ -26,8 +27,8 @@ def model_predict_tflite(img_data):
     img = cv2.resize(img, (width_shape, height_shape))
 
     # Normalizar la imagen
-    img = img / 255.0  # Normalizar la imagen entre 0 y 1
-    img = np.expand_dims(img, axis=0)  # Añadir dimensión extra para batch
+    img = img / 255.0
+    img = np.expand_dims(img, axis=0)
 
     # Establecer la entrada del modelo
     input_details = interpreter.get_input_details()
@@ -57,7 +58,7 @@ def predict():
     # Interpretar la predicción
     predicted_class = class_names[1] if preds[0][0] > 0.5 else class_names[0]
 
-    return jsonify({'prediction': f"La predicción es: {predicted_class}"}), 200
+    return jsonify({'prediction': f"La predicción es: {predicted_class}"})
 
 if __name__ == '__main__':
-    app.run(debug=False, port=5000)
+    app.run(debug=False)
