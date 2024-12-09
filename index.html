@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Predicción de Radiografías</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    
+<body>
+    <h1>Predicción de Radiografías</h1>
+    <form id="upload-form" enctype="multipart/form-data">
+        <input type="file" id="file-input" name="file" accept="image/*" required>
+        <div class="preview">
+            <p>Vista previa de la imagen:</p>
+            <img id="preview-img" src="#" alt="Imagen seleccionada">
+        </div>
+        <button type="button" id="submit-button">Enviar</button>
+    </form>
+    <div class="result" id="result"></div>
+
+    <script>
+        const fileInput = document.getElementById('file-input');
+        const previewDiv = document.querySelector('.preview');
+        const previewImg = document.getElementById('preview-img');
+        const submitButton = document.getElementById('submit-button');
+        const resultDiv = document.getElementById('result');
+
+        // Mostrar vista previa de la imagen seleccionada
+        fileInput.addEventListener('change', () => {
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewDiv.style.display = 'block';
+                    previewImg.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                previewDiv.style.display = 'none';
+            }
+        });
+
+        // Enviar imagen al servidor usando AJAX
+        submitButton.addEventListener('click', () => {
+            const formData = new FormData();
+            const file = fileInput.files[0];
+
+            if (!file) {
+                resultDiv.textContent = "Por favor, selecciona una imagen antes de enviar.";
+                return;
+            }
+
+            formData.append('file', file);
+
+            fetch('/predict', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.text())
+            .then(data => {
+                resultDiv.textContent = data;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultDiv.textContent = "Ocurrió un error. Por favor, inténtalo nuevamente.";
+            });
+        });
+    </script>
+</body>
+</html>
