@@ -13,7 +13,6 @@ from werkzeug.exceptions import BadRequest
 
 import numpy as np
 import cv2
-import uvicorn
 
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
@@ -31,8 +30,8 @@ class_names = ['NORMAL', 'NEUMONIA']
 # Definimos una instancia de Flask
 app = Flask(__name__)
 
-# Path del modelo TensorFlow Lite
-MODEL_PATH = './models/modelo_mlp_radiografia.tflite'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Directorio base del proyecto
+MODEL_PATH = os.path.join(BASE_DIR, 'models', 'modelo_mlp_radiografia.tflite')
 
 # Cargar el modelo TensorFlow Lite
 interpreter = tf.lite.Interpreter(model_path=MODEL_PATH)
