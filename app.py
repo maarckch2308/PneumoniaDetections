@@ -75,4 +75,6 @@ def home():
 
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    port = int(os.environ.get('PORT', 10000))  # El valor de PORT debe estar en la variable de entorno
+    app.run(debug=True, host="0.0.0.0", port=port)
+
