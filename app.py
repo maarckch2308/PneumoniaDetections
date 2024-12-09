@@ -57,11 +57,10 @@ def predict():
     if isinstance(preds, str):
         return jsonify({'error': preds}), 400
 
-    # Interpretar la predicción
-    predicted_class = class_names[1] if preds[0][0] > 0.5 else class_names[0]
+    # Asumir que la salida tiene una dimensión (1, 2) para las dos clases
+    predicted_class = class_names[np.argmax(preds)]
 
     return jsonify({'prediction': f"La predicción es: {predicted_class}"})
-
 
 @app.route('/')
 def home():
