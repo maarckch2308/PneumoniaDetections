@@ -13,6 +13,8 @@ import os
 import numpy as np
 import cv2
 
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
 # Configuración de tamaño de imagen
 width_shape = 128
 height_shape = 128
