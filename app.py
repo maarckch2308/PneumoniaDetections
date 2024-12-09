@@ -10,14 +10,16 @@ from flask import Flask, request, render_template
 from werkzeug.utils import secure_filename
 from werkzeug.exceptions import BadRequest
 
-import os
+
 import numpy as np
-import tensorflow as tf
 import cv2
 
+import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-tf.get_logger().setLevel('ERROR')
 
+import tensorflow as tf
+tf.config.set_visible_devices([], 'GPU')  # Asegura que no se usen GPUs
+tf.get_logger().setLevel('ERROR')  # Reduce el nivel de logs de TensorFlow
 # Configuración de tamaño de imagen
 width_shape = 128
 height_shape = 128
