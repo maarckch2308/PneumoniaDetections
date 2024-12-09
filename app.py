@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 import tensorflow as tf
 from io import BytesIO
+import os
 
 
 
@@ -18,6 +19,11 @@ height_shape = 128
 class_names = ['NORMAL', 'NEUMONIA']
 
 app = Flask(__name__)
+
+# Crear carpeta uploads si no existe
+upload_folder = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'uploads')
+if not os.path.exists(upload_folder):
+    os.makedirs(upload_folder)
 
 def model_predict_tflite(img_data):
     # Convertir la imagen de base64 a un array numpy
@@ -44,6 +50,7 @@ def model_predict_tflite(img_data):
     output_data = interpreter.get_tensor(output_details[0]['index'])
     
     return output_data
+
 
 @app.route('/predict', methods=['POST'])
 def predict():
