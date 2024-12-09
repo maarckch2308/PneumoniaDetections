@@ -1,9 +1,11 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template 
 import base64
 import cv2
 import numpy as np
 import tensorflow as tf
 from io import BytesIO
+
+
 
 # Cargar el modelo de TensorFlow Lite
 MODEL_PATH = './models/modelo_mlp_radiografia.tflite'
@@ -59,6 +61,12 @@ def predict():
     predicted_class = class_names[1] if preds[0][0] > 0.5 else class_names[0]
 
     return jsonify({'prediction': f"La predicción es: {predicted_class}"})
+
+
+@app.route('/')
+def home():
+    return render_template('index.html')  # Renderiza el archivo index.html
+
 
 if __name__ == '__main__':
     app.run(debug=False)
