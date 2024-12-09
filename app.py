@@ -60,6 +60,7 @@ def predict():
             return jsonify({'error': 'No image data provided'}), 400
 
         img_data = data['image']
+        print("Recibiendo imagen de tamaño:", len(img_data))  # Log de tamaño de imagen recibido
         preds = model_predict_tflite(img_data)
 
         if isinstance(preds, str):
@@ -67,13 +68,13 @@ def predict():
 
         # Interpretar la predicción
         predicted_class = class_names[1] if preds[0][0] > 0.5 else class_names[0]
+        print(f"Predicción: {predicted_class}")  # Log de predicción
 
         return jsonify({'prediction': f"La predicción es: {predicted_class}"})
     
     except Exception as e:
+        print(f"Error en la predicción: {str(e)}")  # Log del error
         return jsonify({'error': str(e)}), 500
-
-
 
 
 @app.route('/')
