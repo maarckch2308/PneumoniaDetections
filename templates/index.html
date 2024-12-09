@@ -41,8 +41,8 @@
             }
         });
 
-        // Enviar imagen al servidor en formato JSON usando AJAX
-        submitButton.addEventListener('click', async () => {
+                // Enviar imagen al servidor en formato JSON usando AJAX
+                submitButton.addEventListener('click', async () => {
             const file = fileInput.files[0];
 
             if (!file) {
@@ -68,8 +68,8 @@
                     });
 
                     if (response.ok) {
-                        const result = await response.text();
-                        resultDiv.textContent = result;
+                        const result = await response.json();
+                        resultDiv.textContent = result.prediction; // Mostrar la predicción en el div
                     } else {
                         resultDiv.textContent = "Error en la predicción. Intenta nuevamente.";
                     }
@@ -81,6 +81,7 @@
 
             reader.readAsDataURL(file);
         });
+
     </script>
 </body>
 </html>
