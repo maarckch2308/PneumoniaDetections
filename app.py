@@ -13,6 +13,7 @@ from werkzeug.exceptions import BadRequest
 
 import numpy as np
 import cv2
+import uvicorn
 
 import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
